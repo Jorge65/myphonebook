@@ -41,7 +41,7 @@ const App = () => {
     .then(initialPersons => {
       setPersons(initialPersons)
     })
-    }, [])
+    }, [errorMessage])
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
