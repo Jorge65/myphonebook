@@ -22,7 +22,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
   else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
@@ -37,20 +37,19 @@ app.use(express.static('build'))
 
 var morgan = require('morgan')
 
-let persons = [ 
-]
+//let persons = [ ]
 
-console.log('...start...');
+console.log('...start...')
 
 //app.use(morgan('tiny'))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :newperson'))
-  
+
 app.get('/info', (request, response) => {
-  var d = new Date() 
+  var d = new Date()
   Person.find({}).then(persons => {
-    respText = `phonebook has info for ${persons.length} people <br>  ${d}`
+    const respText = `phonebook has info for ${persons.length} people <br>  ${d}`
     response.send(respText)
-    })
+  })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -61,39 +60,41 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
-  .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
 })
 
-morgan.token('newperson', function(req, res) {
+morgan.token('newperson', function(req) {
   var name = req.body.name
   var number = req.body.number
-  newperson = JSON.stringify( {"name": name, "number": number})
-  return newperson 
-  });
+  const newperson = JSON.stringify( { 'name': name, 'number': number })
+  return newperson
+})
 
+/*
 const generateId = () => {
   id = Math.trunc(Math.random() * 1000000)
   return id
 }
-  
+*/
+
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
+
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -102,6 +103,7 @@ app.post('/api/persons', (request, response, next) => {
   person.save()
     .then(savedPerson => {
       response.json(savedPerson)
+    //      mongoose.connection.close()
     })
     .catch(error => {
       next(error)
@@ -111,13 +113,13 @@ app.post('/api/persons', (request, response, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   if (!body.name) {
-    return response.status(400).json({ 
-      error: 'person information missing' 
+    return response.status(400).json({
+      error: 'person information missing'
     })
   }
   if (!body.number) {
-    return response.status(400).json({ 
-      error: 'number information missing' 
+    return response.status(400).json({
+      error: 'number information missing'
     })
   }
 
@@ -125,13 +127,13 @@ app.put('/api/persons/:id', (request, response, next) => {
     name: body.name,
     number: body.number,
   }
-
+  //////
   Person.findByIdAndUpdate(
-    request.params.id, 
-    person, 
+    request.params.id,
+    person,
     { new: true, runValidators: true, context: 'query' }
-////    { new: true }
   )
+  //////
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
@@ -147,4 +149,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
 
-console.log('..end...');
+console.log('..end...')

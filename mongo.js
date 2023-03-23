@@ -13,7 +13,7 @@ if (process.argv.length>4) {
   console.log('too many arguments')
   process.exit(1)
 }
-if (process.argv.length==3) {
+if (process.argv.length===3) {
   console.log('give both name and number')
   process.exit(1)
 }
@@ -22,7 +22,7 @@ if (process.argv.length==3) {
 const newName = process.argv[2]
 const newNumber = process.argv[3]
 
-//const url = `mongodb+srv://jkemppainen:${password}@jkcluster0.q4kt7z0.mongodb.net/?retryWrites=true&w=majority` 
+//const url = `mongodb+srv://jkemppainen:${password}@jkcluster0.q4kt7z0.mongodb.net/?retryWrites=true&w=majority`
 const url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery', false)
@@ -35,7 +35,7 @@ const personSchema = new mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema)
 
-if (process.argv.length == 2) {
+if (process.argv.length === 2) {
   Person.find({}).then(result => {
     result.forEach(person => {
       console.log(person)
@@ -48,8 +48,8 @@ else {
     name: newName,
     number: newNumber,
   })
-  
-  person.save().then(result => {
+
+  person.save().then(() => {
     console.log(`added ${newName} number ${newNumber} to phonebook`)
     mongoose.connection.close()
   })
